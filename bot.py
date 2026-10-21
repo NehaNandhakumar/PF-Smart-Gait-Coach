@@ -7,8 +7,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, fil
 
 # --- 1. DATABASE SETUP ---
 DB_NAME = "shoefit"
-DB_USER = "nehanandhakumar"     # Change to your local Postgres username if different
-DB_PASSWORD = ""          # Your Postgres password (leave empty string if none)
+DB_USER = "nehanandhakumar"    
+DB_PASSWORD = ""        
 DB_HOST = "localhost"
 DB_PORT = "5432"
 
@@ -36,7 +36,7 @@ def generate_coaching_response(user_message):
     """Retrieves gait logs and feeds them into Ollama for context-aware coaching."""
     recent_logs = get_latest_gait_data()
     
-    # Context prompt grounding the AI as an expert gait analyst
+    # System prompt assigning the AI assistant the role of an expert gait analyst
     system_prompt = f"""
     You are an expert athletic gait analyst and shoe-fitting coach.
     Here is the user's recent stride/pressure sensor data from the database:
@@ -63,7 +63,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text
     await update.message.reply_text("Analyzing your gait data...")
     
-    # Offload the heavy Ollama call to an async thread so the bot doesn't freeze
+    # Run Ollama in a separate thread so the bot stays responsive
     bot_reply = await asyncio.to_thread(generate_coaching_response, user_text)
     
     await update.message.reply_text(bot_reply)
